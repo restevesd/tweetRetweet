@@ -4,12 +4,11 @@ shinyUI(fluidPage(
     titlePanel('Tweet - Retweet'),
     sidebarLayout(
         sidebarPanel(
-            textInput('keyword', "Keyword"),
+            textInput('keyword', "Keyword", value="#python"),
             submitButton('Submit')
             ),
         mainPanel(
-            textOutput("plot")
+            DT::dataTableOutput('tbl')
             )
-        
         )
     ))
