@@ -1,1 +1,7 @@
 twitterOAuth.R
+
+shinyapps/*
+
+#Emacs
+.\#*
+\#*

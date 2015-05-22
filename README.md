@@ -14,3 +14,5 @@ The application has the following features:
 Planed:
 4. Export to gephi
 5. Cashes searches
+
+6. #tweets
