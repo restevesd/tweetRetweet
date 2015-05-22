@@ -15,4 +15,15 @@ Planed:
 4. Export to gephi
 5. Cashes searches
 
-6. #tweets
+6. Add basic statistics:
+  * number of tweets
+  * number of retweets
+  * number of participants
+  * reach
+7. Add users statistics:
+  * active users
+  * influencing users
+  * ???
+8. Add network statistics:
+  * deepness
+  * ???
