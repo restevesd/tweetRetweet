@@ -4,10 +4,13 @@ source('helpers.R')
 require('igraph')
 #source("http://biostat.jhsph.edu/~jleek/code/twitterMap.R")
 
+register_sqlite_backend('tweets.db')
+
 shinyServer(function(input, output) {
     tws.df <- reactive({
-        tws <- searchTwitter(input$keyword, n=input$nMax)
-        tws.df <- twListToDF(tws)
+        # tws <- searchTwitter(input$keyword, n=input$nMax)
+        tweets.loaded <- load_tweets_db()
+        tws.df <- twListToDF(tweets.loaded)
         tws.df
       })
     tws.txt <- reactive({
