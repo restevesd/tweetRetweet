@@ -1,8 +1,10 @@
 # Visualization of hash tag network
 
-This a simple Shiny Application that visualize tweets that contain
-provided word. The relation between tweets is the following:
-tweet1 -> tweet2 if tweet2 is a retweet of tweet1.
+This a simple Shiny Application that visualizes a part Twitter's
+network saved into database using the project:
+https://github.com/sbartek/RtweetsDb
+
+
 
 The application has the following features:
 
