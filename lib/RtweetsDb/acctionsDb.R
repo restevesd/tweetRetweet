@@ -78,6 +78,7 @@ dbReadChildrenM2M <- function(connection,
                              father.model, father.pk.value, 
                              children.model,
                              father.pk='id', children.pk='id',
+                             n.fetch=1000,
                              through=NULL
                              ) {
   join.model <- joinModelName(father.model, children.model)
@@ -98,7 +99,7 @@ dbReadChildrenM2M <- function(connection,
     children.cname, '=', children.pk,
     ';')
   res <- dbSendQuery(connection, query)
-  res.df <- dbFetch(res)
+  res.df <- dbFetch(res, n=n.fetch)
   dbClearResult(res)
   n <- dim(res.df)[2]
   res.df[,-n]

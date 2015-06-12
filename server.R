@@ -25,14 +25,15 @@ shinyServer(function(input, output) {
 
   output$hashSelector <- renderUI({
     selectInput("keyword", "Keyword",
-                choices =     getAllHashes()$hash, 
+                choices =  getAllHashes()$hash, 
                 selected = "#R")
   })
-  
+
   ts.df <- reactive({
+    input$updateDb
     getTweetsFromDB(input$keyword)
   })
-
+  
   rt.graph <- reactive({
     tweetRetweetGraph(ts.df())
   })
@@ -43,6 +44,17 @@ shinyServer(function(input, output) {
     }
   })
 
+  observeEvent(input$updateDb, {
+    print('Updating db...')
+    updateAllHashes()
+    print('...updating done.')
+  })
+
+  
+  output$rnumber <- renderText({
+    input$updateDb
+    rnorm(1)
+  })
   
   tws.df <- reactive({
     getTweetsFromDB(input$keyword)

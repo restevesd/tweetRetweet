@@ -4,15 +4,15 @@ shinyUI(fluidPage(
   titlePanel('Tweet - Retweet'),
   sidebarLayout(
     sidebarPanel(
-     uiOutput('hashSelector'),
-     sliderInput("nMax", "Maximum tweeters", 10, 2000, 50),
-     submitButton('Submit')
+      uiOutput('hashSelector'),
+      actionButton("updateDb", "Update DB")
     ),
     mainPanel(
       tabsetPanel(
         tabPanel("The graph", plotOutput("plot")),
         tabPanel("The table",
-                 DT::dataTableOutput('posterReposter'))
+                 DT::dataTableOutput('posterReposter')),
+        tabPanel("Random number",textOutput('rnumber'))
       )
             )
         )
