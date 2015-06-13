@@ -50,8 +50,9 @@ shinyServer(function(input, output) {
 
   output$trtPlot <- renderPlot({
     rt.graph <- tweetRetweetGraph(tweets.df())
-    tweetRetweetPlot(rt.graph)
-  })
+    tweetRetweetPlot(rt.graph,
+                     PercentageOfConnections=input$PercentageOfConnections/100)
+  },  height = 1000, width = 1000)
 
   output$trtNodes <- DT::renderDataTable({
      DT::datatable(tweetRetweetNodes(tweetRetweetGraph(tweets.df())),

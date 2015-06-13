@@ -15,13 +15,17 @@ shinyUI(fluidPage(
     mainPanel(
       tabsetPanel(
         tabPanel("Time evolution",
-                 div(plotOutput("freqPlot"),
-                     uiOutput('freqText'))
+                 div(br(),uiOutput('freqText'),
+                     plotOutput("freqPlot"))
                  ),
         tabPanel("Basic Statistics", uiOutput('basicStat')),
         tabPanel("Users Statistics",
                  DT::dataTableOutput('trtNodes')),
-        tabPanel("Tweet-Retweet Network", plotOutput('trtPlot'))
+        tabPanel("Tweet-Retweet Network",
+                 div(sliderInput("PercentageOfConnections",
+                                 "Percentage Of Connections To Plot",
+                                 0, 100, 10),
+                     plotOutput('trtPlot')))
       )
     )
   )

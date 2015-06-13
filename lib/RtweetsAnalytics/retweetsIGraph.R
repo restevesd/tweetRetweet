@@ -1,7 +1,6 @@
 #depends on retweets.R
 #
 
-
 tweetRetweetGraph <- function(tweets.df) {
   graph.edgelist(retweetsEdgelist.matrix(tweets.df))
 }
@@ -20,20 +19,29 @@ tweetRetweetNodes <- function(rt.graph) {
   merged[order(merged$orginalOrder),]
 }
 
-tweetRetweetPlot <- function(rt.graph, Nlabels=10, sizeMulti=0.01) {
-  nodes.df <- tweetRetweetNodes(rt.graph)
+tweetRetweetPlot <- function(rt.graph, Nlabels=10, sizeMulti=0.01,
+                             PercentageOfConnections=1) {
+  Ntotal <- length(E(rt.graph))
+  Nconn <- round(Ntotal*PercentageOfConnections)
+  new.graph <- subgraph.edges(rt.graph, E(rt.graph)[sample(1:Ntotal, Nconn)])
+  
+  nodes.df <- tweetRetweetNodes(new.graph)
+
   labeledNodes <- nodes.df[order(-nodes.df$Nretwitted),]$Nodes[1:Nlabels]
   nodes.df$label <- sapply(nodes.df$Nodes, function(n) {if (n %in% labeledNodes) {n} else {""}})
   nodes.df$color <- "gray45"
-  l <- layout.auto(rt.graph)
-  plot(rt.graph,
+  l <- layout.auto(new.graph)
+  #l <- layout.fruchterman.reingold(new.graph)#, niter=10000, area=vcount(new.graph)^4,
+                                        #repulserad=vcount(new.graph)^2.2)
+    plot(new.graph,
        vertex.size=nodes.df$Nretwitted*sizeMulti,
        vertex.label= nodes.df$label,
        vertex.label.family="sans",
-       vertex.label.cex=0.5,
+       vertex.label.cex=1,
        vertex.label.color = "darkred",
-       vertex.color= rgb(.5, 0, 0, alpha=1), #hsv(h=.95, s=1, v=.7, alpha=0.5),   #nodes.df$Nretweets, #
-       edge.color=  rgb(0, 0, 1, alpha=0.1) , #fb.net.el$color,
+       vertex.frame.color = rgb(124/255, 194/255, 66/255, alpha=0.7),
+       vertex.color= rgb(124/255, 194/255, 66/255, alpha=0.2), #hsv(h=.95, s=1, v=.7, alpha=0.5),   #nodes.df$Nretweets, #
+       edge.color= rgb(124/255, 194/255, 66/255, alpha=0.3),  #fb.net.el$color,
        edge.width=1,
        edge.arrow.size=0.2,
        edge.curved=0.3,
