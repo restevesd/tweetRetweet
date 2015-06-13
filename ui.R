@@ -1,34 +1,26 @@
 require('shiny')
 
-## shinyUI(fluidPage(
-##   titlePanel('Tweet - Retweet'),
-##   sidebarLayout(
-##     sidebarPanel(
-##       uiOutput('hashSelector'))
-##       #actionButton("updateDb", "Update DB")
-##    ## ,
-##    ##  mainPanel(
-##    ##    tabsetPanel(
-##    ##      #tabPanel("The graph", plotOutput("plot")),
-##    ##      #tabPanel("The table",
-##    ##      #         DT::dataTableOutput('posterReposter')),
-##    ##      #tabPanel("Random number",textOutput('rnumber'))
-##    ##    )
-##    ##          )
-##    ##      )
-##     )
-##   )
-
 shinyUI(fluidPage(
-  titlePanel("Tweet - Retweet"),
+  br(),
   sidebarLayout(
     sidebarPanel(
-      uiOutput('hashSelector')
+      img(src ='assets/imgs/Oxfam_International_logo.svg'),  h1('DataTweets'),
+      p("Analysis of Tweets with certain hash."),
+      uiOutput('hashSelector'),
+      dateRangeInput("dateRange", "Date Range",
+                     start = Sys.Date() - 14, end = Sys.Date()),
+      p('Connect with Twitter and update database.'),
+      actionButton("updateDb", "Update DataBase")
     ),
     mainPanel(
       tabsetPanel(
-        tabPanel("Frequency Plot", plotOutput("freqPlot")),
+        tabPanel("Time evolution",
+                 div(plotOutput("freqPlot"),
+                     uiOutput('freqText'))
+                 ),
         tabPanel("Basic Statistics", uiOutput('basicStat')),
+        tabPanel("Users Statistics",
+                 DT::dataTableOutput('trtNodes')),
         tabPanel("Tweet-Retweet Network", plotOutput('trtPlot'))
       )
     )

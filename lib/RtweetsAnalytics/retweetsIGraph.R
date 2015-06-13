@@ -26,8 +26,6 @@ tweetRetweetPlot <- function(rt.graph, Nlabels=10, sizeMulti=0.01) {
   nodes.df$label <- sapply(nodes.df$Nodes, function(n) {if (n %in% labeledNodes) {n} else {""}})
   nodes.df$color <- "gray45"
   l <- layout.auto(rt.graph)
-  #l <- layout.fruchterman.reingold(rt.graph)#, niter=10000, area=vcount(rt.graph)^4,
-                                  #repulserad=vcount(rt.graph)^2.2)
   plot(rt.graph,
        vertex.size=nodes.df$Nretwitted*sizeMulti,
        vertex.label= nodes.df$label,

@@ -1,21 +1,42 @@
 require('shiny')
+require('DT')
 source('RtweetsAnalytics.R')
 
 
 shinyServer(function(input, output) {
 
+  output$oxfamImage <- renderImage({
+    list(
+        src = 'www/assets/imgs/Oxfam_International_logo.svg',
+        filetype = "image/svg",
+        alt = "Oxfam Logo"
+      )
+  })
+  
+  observeEvent(input$updateDb, {
+    print('Updating db...')
+    twitterOAuth()
+    updateAllHashes()
+    print('...updating done.')
+  })
+  
   output$hashSelector <- renderUI({
-    selectInput("keyword", "Keyword",
+    selectInput("keyword", "Select hash",
                 choices =  getAllHashes()$hash, 
                 selected = "#R")
   })
 
   tweets.df <- reactive({
-    #input$updateDb
-    getTweetsFromDB(input$keyword, n.tweets=10000)
+    input$updateDb
+    limitByDate(getTweetsFromDB(input$keyword, n.tweets=10000),
+                input$dateRange[1], input$dateRange[2]+1)
   })
 
-
+  output$freqText <- renderUI({
+    p(paste0('Time evolution of numbers of tweets with hash ', input$keyword,
+            '. '))
+  })
+  
   output$freqPlot <- renderPlot({
     freqPlotByTRT(tweets.df())
   })
@@ -32,4 +53,8 @@ shinyServer(function(input, output) {
     tweetRetweetPlot(rt.graph)
   })
 
+  output$trtNodes <- DT::renderDataTable({
+     DT::datatable(tweetRetweetNodes(tweetRetweetGraph(tweets.df())),
+                   options = list(lengthChange = FALSE))
+  })
 })
