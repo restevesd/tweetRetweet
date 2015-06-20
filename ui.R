@@ -4,7 +4,8 @@ shinyUI(fluidPage(
   br(),
   sidebarLayout(
     sidebarPanel(
-      img(src ='assets/imgs/Oxfam_International_logo.svg'),  h1('DataTweets'),
+      img(src ='assets/imgs/Oxfam_International_logo.svg'),
+      h1('DataTweets'),
       p("Analysis of Tweets with certain hash."),
       uiOutput('hashSelector'),
       dateRangeInput("dateRange", "Date Range",
@@ -18,7 +19,7 @@ shinyUI(fluidPage(
                  div(br(),uiOutput('freqText'),
                      plotOutput("freqPlot"))
                  ),
-        tabPanel("Basic Statistics", uiOutput('basicStat')),
+        tabPanel("Basic Statistics", DT::dataTableOutput('basicStat')),
         tabPanel("Users Statistics",
                  DT::dataTableOutput('trtNodes')),
         tabPanel("Tweet-Retweet Network",

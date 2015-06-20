@@ -1,6 +1,7 @@
 */twitterAuth.R
 
 shinyapps/*
+rsconnect/*
 
 #Emacs
 .\#*

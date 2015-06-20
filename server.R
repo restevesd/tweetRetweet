@@ -41,11 +41,15 @@ shinyServer(function(input, output) {
     freqPlotByTRT(tweets.df())
   })
   
-  output$basicStat <- renderUI({
-    div(p(),
-        p(paste('Total number of tweets:', dim(tweets.df())[1])),
-        p(paste('Number of retweets:', dim(retwitted(tweets.df()))[1])),
-        p(paste('Number of no retwitted tweets:', dim(noRetwitted(tweets.df()))[1])))
+  output$basicStat <- DT::renderDataTable({
+    ## div(p(),
+    ##     p(paste('Total number of tweets:', dim(tweets.df())[1])),
+    ##     p(paste('Number of retweets:', dim(retwitted(tweets.df()))[1])),
+    ##     p(paste('Number of no retwitted tweets:', dim(noRetwitted(tweets.df()))[1])))
+
+    bs.df <- basicStatDf(tweets.df())
+    bs.DT <- DT::datatable(bs.df, options = list(lengthChange = FALSE))
+    bs.DT
   })
 
   output$trtPlot <- renderPlot({
@@ -55,7 +59,8 @@ shinyServer(function(input, output) {
   },  height = 1000, width = 1000)
 
   output$trtNodes <- DT::renderDataTable({
-     DT::datatable(tweetRetweetNodes(tweetRetweetGraph(tweets.df())),
-                   options = list(lengthChange = FALSE))
+    nodes.df <- tweetRetweetNodes(tweetRetweetGraph(tweets.df()))
+    DT::datatable(nodes.df[order(-nodes.df$Nretwitted),],
+                  options = list(lengthChange = FALSE))
   })
 })
