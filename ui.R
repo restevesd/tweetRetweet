@@ -19,14 +19,24 @@ shinyUI(fluidPage(
                  div(br(),uiOutput('freqText'),
                      plotOutput("freqPlot"))
                  ),
-        tabPanel("Basic Statistics", DT::dataTableOutput('basicStat')),
+        tabPanel("Basic Statistics",
+                 div(
+                   tableOutput('basicStat'),
+                   tableOutput('basicStat2')
+                   ## DT::dataTableOutput('basicStat')
+                 )
+                 ),
         tabPanel("Users Statistics",
                  DT::dataTableOutput('trtNodes')),
         tabPanel("Tweet-Retweet Network",
                  div(sliderInput("PercentageOfConnections",
                                  "Percentage Of Connections To Plot",
                                  0, 100, 10),
-                     plotOutput('trtPlot')))
+                     plotOutput('trtPlot'))),
+        tabPanel("Downloads",
+                 div(
+                   downloadLink('downloadUsers', 'Download Users'))
+                 )
       )
     )
   )

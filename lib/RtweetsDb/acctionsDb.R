@@ -37,15 +37,21 @@ selectNewRows <- function(df, df.old, pk='id') {
 }
 
 dbWriteNewRows <- function(connection, model, df, pk='id') {
+  rownames(df) <- c() # somehow we need to remove rownames
   if (dbExistsTable(connection, model)) {
     df.old <- getColumn(connection, model, pk)
     df.new <- selectNewRows(df, df.old, pk)
     if (!is.null(df.new)) {
+      ## if (dim(df.old)[1]==0) {
+      ##   dbWriteTable(connection, model, df, overwrite=TRUE)
+      ## }
       dbWriteTable(connection, model, df.new, append=TRUE)
     }
   } else {
     dbWriteTable(connection, model, df)
+    df.new <- df
   }
+  df.new
 }
 
 joinModelName <- function(s1, s2) {
@@ -57,10 +63,9 @@ dbAddChildrenM2M <- function(connection,
                              father.model, father.row, 
                              children.model, children.df,
                              father.pk='id', children.pk='id',
-                             through=NULL
-                             ) {
+                             through=NULL) {
   dbWriteNewRows(connection, father.model, father.row, pk=father.pk)
-  dbWriteNewRows(connection, children.model, children.df, pk=children.pk)
+  newChildren <- dbWriteNewRows(connection, children.model, children.df, pk=children.pk)
   if (is.null(through)) {
     join.model <- joinModelName(father.model, children.model)
     father.cname <- paste0(father.model,'_fk')
@@ -72,6 +77,7 @@ dbAddChildrenM2M <- function(connection,
     colnames(join.df) <- join.colnames
     dbWriteNewRows(connection, join.model, join.df, pk=join.colnames)
   }
+  newChildren
 }
 
 dbReadChildrenM2M <- function(connection,

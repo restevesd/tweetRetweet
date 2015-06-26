@@ -2,6 +2,7 @@ require('shiny')
 require('DT')
 source('RtweetsAnalytics.R')
 
+createTwitterModels() # follows schemas in config/db
 
 shinyServer(function(input, output) {
 
@@ -16,7 +17,7 @@ shinyServer(function(input, output) {
   observeEvent(input$updateDb, {
     print('Updating db...')
     twitterOAuth()
-    updateAllHashes()
+    updateAllHashesWithUsers()
     print('...updating done.')
   })
   
@@ -32,6 +33,11 @@ shinyServer(function(input, output) {
                 input$dateRange[1], input$dateRange[2]+1)
   })
 
+  nodes.df <- reactive({
+    input$updateDb
+    tweetRetweetNodesFull(tweetRetweetGraph(tweets.df()))
+  })
+  
   output$freqText <- renderUI({
     p(paste0('Time evolution of numbers of tweets with hash ', input$keyword,
             '. '))
@@ -41,15 +47,14 @@ shinyServer(function(input, output) {
     freqPlotByTRT(tweets.df())
   })
   
-  output$basicStat <- DT::renderDataTable({
-    ## div(p(),
-    ##     p(paste('Total number of tweets:', dim(tweets.df())[1])),
-    ##     p(paste('Number of retweets:', dim(retwitted(tweets.df()))[1])),
-    ##     p(paste('Number of no retwitted tweets:', dim(noRetwitted(tweets.df()))[1])))
+  output$basicStat <- renderTable({
+    basicStatDf(tweets.df())
+  })
 
-    bs.df <- basicStatDf(tweets.df())
-    bs.DT <- DT::datatable(bs.df, options = list(lengthChange = FALSE))
-    bs.DT
+  output$basicStat2 <- renderTable({
+    users.df <- nodes.df()[c('Nodes', 'followersCount')]
+    colnames(users.df) <- c('screenName', 'followersCount')
+    basicStat2Df(tweets.df(), users.df)
   })
 
   output$trtPlot <- renderPlot({
@@ -59,8 +64,19 @@ shinyServer(function(input, output) {
   },  height = 1000, width = 1000)
 
   output$trtNodes <- DT::renderDataTable({
-    nodes.df <- tweetRetweetNodes(tweetRetweetGraph(tweets.df()))
-    DT::datatable(nodes.df[order(-nodes.df$Nretwitted),],
+    ns.df <- nodes.df()
+    DT::datatable(ns.df[order(-ns.df$Nretwitted),],
                   options = list(lengthChange = FALSE))
   })
+
+
+  output$downloadUsers <- downloadHandler(
+    filename = function() {
+       paste('users-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(nodes.df(), file)
+    }
+  )
+  
 })

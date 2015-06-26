@@ -6,3 +6,6 @@ rsconnect/*
 #Emacs
 .\#*
 \#*
+
+.Rhistory
+.Rdata

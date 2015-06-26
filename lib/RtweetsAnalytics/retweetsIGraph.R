@@ -1,5 +1,7 @@
-#depends on retweets.R
-#
+## depends on retweets.R
+##
+
+require('rgexf')
 
 tweetRetweetGraph <- function(tweets.df) {
   graph.edgelist(retweetsEdgelist.matrix(tweets.df))
@@ -20,6 +22,13 @@ tweetRetweetNodes <- function(rt.graph) {
   # ploting the graph of connections
   merged <- merged[order(merged$orginalOrder),-3]
   rownames(merged) <- c()
+  merged
+}
+
+tweetRetweetNodesFull <- function(rt.graph) {
+  nodes <- tweetRetweetNodes(rt.graph)
+  users <- getAllUsers()
+  merged <- merge(nodes, users, all.x=TRUE, by.x="Nodes", by.y="screenName")
   merged
 }
 
@@ -65,4 +74,8 @@ writeGephiCsv <- function(tweets.df, nodes.csv.fn=NULL, edges.csv.fn=NULL) {
   colnames(nodes.df)[1] <- 'ID'
   write.csv(edges.df, file=edges.csv.fn, row.names=F)
   write.csv(nodes.df, file=nodes.csv.fn, row.names=F)
+  cg1 <- tweetRetweetGraph(tweets.df)
+  nodes <- data.frame(cbind(V(cg1), as.character(V(cg1))))
+  edges <- t(Vectorize(get.edge, vectorize.args='id')(cg1, 1:ecount(cg1)))
+  write.gexf(nodes, edges,  output = "output/gephi/tweetRetweet.gexf")
 }
