@@ -1,4 +1,4 @@
-# Visualization of hash tag network
+# Twitter Tailored Tool
 
 ## Propose
 
@@ -8,6 +8,7 @@ https://github.com/sbartek/RtweetsDb
 https://github.com/sbartek/RtweetsAnalytics
 
 It is done as a project for two proposes.
+
 1. As assignment for Developing Data Products Course in Data
    Specialization.
 2. As application that can be used to explore Oxfam Intermon campaigns

@@ -2,6 +2,7 @@ require('twitteR')
 
 source('RmodelsDb.R')
 source('lib/RtweetsDb/twitterDb.R')
+source('lib/RtweetsDb/coordinatesDb.R')
 
 config.path <- 'config/twitterDb.R'
 

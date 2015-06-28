@@ -1,0 +1,3 @@
+"location" TEXT NOT NULL UNIQUE,
+"lon" REAL,
+"lat" REAL

@@ -2,9 +2,28 @@ require('shiny')
 require('DT')
 source('RtweetsAnalytics.R')
 
+delta <- 0.2
+
 createTwitterModels() # follows schemas in config/db
 
 shinyServer(function(input, output) {
+
+  ## Updating DB
+
+  observeEvent(input$updateDb, {
+    print('Updating db...')
+    twitterOAuth()
+    updateAllHashesWithUsers()
+    print('...updating done.')
+  })  
+
+  ## Side Panel outputs
+  
+  output$hashSelector <- renderUI({
+    selectInput("keyword", "Select hash",
+                choices =  getAllHashes()$hash, 
+                selected = "#R")
+  })
 
   output$oxfamImage <- renderImage({
     list(
@@ -14,18 +33,7 @@ shinyServer(function(input, output) {
       )
   })
   
-  observeEvent(input$updateDb, {
-    print('Updating db...')
-    twitterOAuth()
-    updateAllHashesWithUsers()
-    print('...updating done.')
-  })
-  
-  output$hashSelector <- renderUI({
-    selectInput("keyword", "Select hash",
-                choices =  getAllHashes()$hash, 
-                selected = "#R")
-  })
+  ## DF in memory
 
   tweets.df <- reactive({
     input$updateDb
@@ -37,6 +45,34 @@ shinyServer(function(input, output) {
     input$updateDb
     tweetRetweetNodesFull(tweetRetweetGraph(tweets.df()))
   })
+
+  allLocations.df <- reactive({
+    getAll('coordinates')
+  })
+
+  usersCoordinates.df <- reactive({
+    usersLoc <- nodes.df()[c("Nodes", "location")]
+    merge(usersLoc, allLocations.df(), all.x=TRUE)
+  })
+
+  tweetsCoordinates.df <- reactive({
+    tweets.sn <- data.frame(Nodes=tweets.df()$screenName)
+    merge(tweets.sn, usersCoordinates.df(), all.x=TRUE)
+  })
+
+  tweetsCoordinatesDisturbed.df <- reactive({
+    coords <- tweetsCoordinates.df()
+    data.frame(lon=distrurb(coords$lon, delta),
+               lat=distrurb(coords$lat, delta))
+  })
+
+  ## Map
+
+  output$usersMapPlot <- renderPlot({
+    usersMapPlot(tweetsCoordinatesDisturbed.df())
+  },  height = 600, width = 1000
+  )
+
   
   output$freqText <- renderUI({
     p(paste0('Time evolution of numbers of tweets with hash ', input$keyword,
@@ -46,7 +82,8 @@ shinyServer(function(input, output) {
   output$freqPlot <- renderPlot({
     freqPlotByTRT(tweets.df())
   })
-  
+
+
   output$basicStat <- renderTable({
     basicStatDf(tweets.df())
   })
@@ -69,13 +106,39 @@ shinyServer(function(input, output) {
                   options = list(lengthChange = FALSE))
   })
 
-
   output$downloadUsers <- downloadHandler(
     filename = function() {
        paste('users-', Sys.Date(), '.csv', sep='')
     },
     content = function(file) {
       write.csv(nodes.df(), file)
+    }
+  )
+
+  output$tweets <- renderDataTable({
+    tweets.df()
+  })
+
+  output$downloadTweets <- downloadHandler(
+    filename = function() {
+       paste('tweets-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(tweets.df(), file)
+    }
+  )
+  
+  output$locations <- renderDataTable({
+    ## tweetsCoordinatesDisturbed.df()
+    usersCoordinates.df()
+  })
+
+  output$downloadTweets <- downloadHandler(
+    filename = function() {
+       paste('locations-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(usersCoordinates.df(), file)
     }
   )
   
