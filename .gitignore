@@ -9,3 +9,4 @@ rsconnect/*
 
 .Rhistory
 .Rdata
+db/*-journal
