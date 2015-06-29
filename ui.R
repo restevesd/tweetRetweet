@@ -9,27 +9,49 @@ shinyUI(fluidPage(
       p("Analysis of Tweets with certain hash."),
       uiOutput('hashSelector'),
       dateRangeInput("dateRange", "Date Range",
-                     start = Sys.Date() - 31, end = Sys.Date()),
-      p('Connect with Twitter and update database.'),
-      actionButton("updateDb", "Update DataBase")
+                     start = Sys.Date() - 31, end = Sys.Date())
     ),
     mainPanel(
       tabsetPanel(
-        tabPanel("Map", plotOutput('usersMapPlot')),
-        tabPanel("Time evolution",
-                 div(br(),uiOutput('freqText'),
-                     plotOutput("freqPlot"))
+        tabPanel("Map",
+                 div(
+                   br(),
+                   selectInput("region", "Select region",
+                               choices =  c('World', 'Spain'),
+                               selected = "World"),
+                   plotOutput('usersMapPlot'))),
+        tabPanel("Histograms",
+                 div(
+                   br(),
+                   sliderInput("histBinwidth",
+                               "Binwidth of bars (in hours)",
+                               1, 7*24, 24),
+                   plotOutput("tweetsHist"),
+                   uiOutput('freqText'),
+                   plotOutput("freqPlot")
+                 )
                  ),
-        tabPanel("Tweet-Retweet Network",
+        tabPanel("TRT Network",
                  div(sliderInput("PercentageOfConnections",
                                  "Percentage Of Connections To Plot",
                                  0, 100, 10),
                      plotOutput('trtPlot'))),
-        tabPanel("Basic Statistics",
+        tabPanel("Statistics",
                  div(
                    tableOutput('basicStat'),
                    tableOutput('basicStat2')
                    ## DT::dataTableOutput('basicStat')
+                 )
+                 ),
+        tabPanel("Tweets",
+                 div(
+                   p('Connect with Twitter and update database.'),
+                   actionButton("updateDb", "Update DataBase"),
+                   br(),
+                   br(),
+                   DT::dataTableOutput('tweets'),
+                   br(),
+                   downloadLink('downloadTweets', 'Download CSV')
                  )
                  ),
         tabPanel("Users",
@@ -40,16 +62,24 @@ shinyUI(fluidPage(
                    downloadLink('downloadUsers', 'Download CSV')
                  )
                  ),
-        tabPanel("Tweets",
+        tabPanel("TRTEdgelist",
                  div(
                    br(),
-                   dataTableOutput('tweets'),
+                   DT::dataTableOutput('trtEdgelist'),
                    br(),
-                   downloadLink('downloadTweets', 'Download CSV')
+                   downloadLink('downloadTrtEdgelist', 'Download CSV')
                  )
                  ),
-        tabPanel("Locations",
-                 dataTableOutput('locations')
+        tabPanel("Coordinates",
+                 div(
+                   p('Connect with Google and update database of coordinates.'),
+                   actionButton("updateCoordinates", "Update DataBase"),
+                   br(),
+                   br(),
+                   DT::dataTableOutput('coordinates'),
+                   br(),
+                   downloadLink('downloadCoordinates', 'Download CSV')
+                 )
                  )
       )
     )

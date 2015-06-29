@@ -27,8 +27,13 @@ tweetRetweetNodes <- function(rt.graph) {
 
 tweetRetweetNodesFull <- function(rt.graph) {
   nodes <- tweetRetweetNodes(rt.graph)
+  print("aaa")
+  print(dim(nodes))
   users <- getAllUsers()
   merged <- merge(nodes, users, all.x=TRUE, by.x="Nodes", by.y="screenName")
+  print("bbb")
+  print(dim(merged))
+  print("ccc")
   merged
 }
 

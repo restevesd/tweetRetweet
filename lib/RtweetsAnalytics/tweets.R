@@ -62,11 +62,21 @@ freqPlotAll <- function(tweets.df) {
     theme_bw() + xlab('DateTime')  
 }
 
-freqPlotByTRT <- function(tweets.df, init.date=NULL, end.date=NULL) {
+tweetsHist <-  function(tweets.df, byHours=24) {
+  ggplot(data=tweets.df) +
+    geom_bar(aes(x=toDateTime(created), fill=as.factor(isRetweet)),
+             binwidth=byHours*3600) +
+    theme_bw() + xlab('DateTime')  +
+    labs(fill="Retwitted?") +
+    scale_fill_discrete(labels=c("No", "Yes"))
+}
+
+freqPlotByTRT <- function(tweets.df, init.date=NULL, end.date=NULL,
+                          byHours=2) {
   new.df <- limitByDate(tweets.df, init.date, end.date)
   ggplot(data=new.df) +
-    geom_freqpoly(aes(toDateTime(created), colour=as.factor(isRetweet)),
-                  binwidth=10000) +
+    geom_freqpoly(aes(x=toDateTime(created), colour=as.factor(isRetweet)),
+                  binwidth=byHours*3600) +
     theme_bw() + xlab('DateTime') +
         labs(colour="Retwitted?") +
     scale_colour_discrete(labels=c("No", "Yes"))

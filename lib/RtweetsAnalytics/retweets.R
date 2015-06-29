@@ -13,6 +13,11 @@ extractPosters <- function(tweets.df) {
   gsub(":", "", rt.posters, ignore.case=TRUE)
 }
 
+extractTweets <- function(tweets.df) {
+  ts.text <- gsub(RETWEET.PATERN, "", tweets.df$text)
+  gsub("^ +", "", ts.text)
+}
+
 retweetsEdgelist <- function(tweets.df) {
   retweets.ines <- retweetsMatches(tweets.df)
   who.retweets <- tweets.df[retweets.ines,]$screenName

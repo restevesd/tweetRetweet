@@ -1,7 +1,11 @@
 ## require('ggmap')
 
-usersMapPlot <- function(coordinates.df) {
-  worldMap <- map_data("world")
+usersMapPlot <- function(coordinates.df, region=NULL) {
+  if (is.null(region) | region=="World") {
+    worldMap <- map_data("world")
+  } else {
+    worldMap <- map_data("world", region=region)
+  }
   coordinates.plot <- ggplot() +
     geom_polygon( data=worldMap, aes(x=long, y=lat, group = group),
                  colour="grey", fill="grey10", size=.1 ) +
@@ -10,7 +14,9 @@ usersMapPlot <- function(coordinates.df) {
           panel.grid.major = element_line(colour="grey", size=0.1),
           panel.grid.minor = element_line(colour="grey", linetype="dashed", size=0.1)
           ) +
-    xlab("") + ylab("") 
+##    xlab("") + ylab("") +
+    coord_cartesian(xlim = c(min(worldMap$long), max(worldMap$long)),
+                    ylim = c(min(worldMap$lat), max(worldMap$lat)))
   coordinates.plot + geom_point(data = coordinates.df,  
                                 aes(x = lon, y = lat),
                                 colour = "yellow", alpha = .3, size = 1)
