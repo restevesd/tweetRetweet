@@ -28,15 +28,18 @@ lookupAndAddUsers <- function(users, db.path=DBPATH) {
 }
 
 getAndSaveTweets <- function(hash.txt, n=NTWEETS, db.path=DBPATH) {
+  print(paste('Lookup tweets for hash ', hash.txt))
   tweets.tweets <- searchTwitter(hash.txt, n)
   newChildren <- NULL
   if (length(tweets.tweets) != 0) {
+    print('saving ...')
     tweets.df <- twListToDF(tweets.tweets)
     hash.row <- data.frame(hash=hash.txt)
     connection <- getConnection(db.path)
     newChildren <- dbAddChildrenM2M(connection, 'hashes', hash.row,
                                     'tweets', tweets.df, father.pk='hash')
     dbDisconnect(connection)
+    print('ok')
   }
   return(newChildren)
 }
@@ -90,4 +93,10 @@ usersFromTweets <- function(newTweetss.list) {
   }
   newTweets$screenName
 }
+
+## Clening:
+## DELETE FROM tweets WHERE rowid NOT IN (SELECT maxrid FROM (SELECT MAX(rowid) AS maxrid, COUNT(id) AS nrs FROM tweets GROUP BY id) WHERE nrs > 1);
+## Better:
+## DELETE FROM users WHERE rowid NOT IN  (SELECT MAX(rowid) FROM users GROUP BY id);
+## DELETE FROM hashesTweets WHERE rowid NOT IN (SELECT MAX(rowid) FROM hashesTweets GROUP BY hashes_fk, tweets_fk);
 

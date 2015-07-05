@@ -13,7 +13,13 @@ getColumn <- function(connection, model, column.names) {
   res.df
 }
 
+eliminateDuplicates <- function(df, pk='id') {
+  subset(df, !duplicated(df[pk]))
+}
+
 selectNewRows <- function(df, df.old, pk='id') {
+  rownames(df) <- c() # somehow we need to remove rownames
+  df <- eliminateDuplicates(df, pk)
   if (dim(df.old)[1]!=0) {
     df.old$dbWriteNewRowsControllX152 <- rep('old',dim(df.old)[1])
     mergedDF <- merge(df, df.old, all.x=TRUE, by=pk, sort = FALSE)
@@ -39,7 +45,8 @@ selectNewRows <- function(df, df.old, pk='id') {
 dbWriteNewRows <- function(connection, model, df, pk='id') {
   rownames(df) <- c() # somehow we need to remove rownames
   if (dbExistsTable(connection, model)) {
-    df.old <- getColumn(connection, model, pk)
+    ## df.old <- getColumn(connection, model, pk)
+    df.old <- dbReadTable(connection, model)[pk]
     df.new <- selectNewRows(df, df.old, pk)
     if (!is.null(df.new)) {
       ## if (dim(df.old)[1]==0) {

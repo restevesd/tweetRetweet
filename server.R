@@ -20,8 +20,6 @@ shinyServer(function(input, output) {
 
   observeEvent(input$updateCoordinates, {
     print('Connectiong with google and updating db...')
-    print(length(nodes.df()$location))
-    print(length(newLocations(nodes.df()$location)))
     lookupAndAddCoordinates(nodes.df()$location)
     print('...updating done.')
   })  
