@@ -25,8 +25,9 @@ shinyUI(fluidPage(
                    br(),
                    sliderInput("histBinwidth",
                                "Binwidth of bars (in hours)",
-                               1, 7*24, 24),
+                               1, 7*24, 3),
                    plotOutput("tweetsHist"),
+                   plotOutput("actionsHis"),
                    uiOutput('freqText'),
                    plotOutput("freqPlot")
                  )

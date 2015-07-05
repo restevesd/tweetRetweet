@@ -28,7 +28,7 @@ shinyServer(function(input, output) {
   output$hashSelector <- renderUI({
     selectInput("keyword", "Select hash",
                 choices =  getAllHashes()$hash, 
-                selected = "#IGUALES")
+                selected = "#STOPDesigualdad")
   })
 
   output$oxfamImage <- renderImage({
@@ -46,6 +46,12 @@ shinyServer(function(input, output) {
                 input$dateRange[1], input$dateRange[2]+1)
   })
 
+  tweetsByScreenName.df <- reactive({
+    tbs.df <- data.frame(table(by(tweets.df()$id, tweets.df()$screenName, length)))
+    colnames(tbs.df) <- c("actionsNumber", "Freq")
+    tbs.df
+  })
+  
   nodes.df <- reactive({
     input$updateDb
     tweetRetweetNodesFull(tweetRetweetGraph(tweets.df()))
@@ -60,6 +66,7 @@ shinyServer(function(input, output) {
     getAll('coordinates')
   })
 
+ 
   coordinates.df <- reactive({
     input$updateDb
     subset(allLocations.df(), location %in% nodes.df()$location)
@@ -103,6 +110,19 @@ shinyServer(function(input, output) {
 
   output$tweetsHist <- renderPlot({
     tweetsHist(tweets.df(), byHours=input$histBinwidth)
+  })
+
+  output$actionsHis <- renderPlot({
+    tbs.df <- tweetsByScreenName.df()
+    tbs1.freq <- sum(tbs.df[tbs.df$actionsNumber==1,2])
+    tbs2.freq <- sum(tbs.df[tbs.df$actionsNumber %in% 2:4,2])
+    tbs3.freq <- sum(tbs.df[tbs.df$actionsNumber %in% 5:10,2])
+    tbs4.freq <- sum(tbs.df[!(tbs.df$actionsNumber %in% 1:10),2])
+    aN <- factor(c('1','2-4', '5-10', '>10'), levels=c('1','2-4', '5-10', '>10'), ordered=TRUE)
+    tbs2.df <- data.frame(actionsNumber=aN,
+                          Freq=c(tbs1.freq, tbs2.freq, tbs3.freq, tbs4.freq))
+    ggplot(tbs2.df, aes(actionsNumber, Freq)) + geom_bar(stat="identity") +
+      theme_bw()
   })
   
   output$freqPlot <- renderPlot({
