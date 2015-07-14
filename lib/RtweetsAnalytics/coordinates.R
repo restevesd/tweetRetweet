@@ -18,8 +18,8 @@ usersMapPlot <- function(coordinates.df, region=NULL) {
     coord_cartesian(xlim = c(min(worldMap$long), max(worldMap$long)),
                     ylim = c(min(worldMap$lat), max(worldMap$lat)))
   coordinates.plot + geom_point(data = coordinates.df,  
-                                aes(x = lon, y = lat),
-                                colour = "yellow", alpha = .3, size = 1)
+                                 aes(x = lon, y = lat),
+                                 colour = "yellow", alpha = .3, size = 1)
 }
 
 

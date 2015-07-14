@@ -7,17 +7,29 @@ tweetRetweetGraph <- function(tweets.df) {
   graph.edgelist(retweetsEdgelist.matrix(tweets.df))
 }
 
+basicStat3Df <- function(rt.graph) {
+  bs3.df <- data.frame(Diameter=diameter(rt.graph),
+                       AveragePathLength=average.path.length(rt.graph),
+                       Density=graph.density(rt.graph),
+                       Clusters=clusters(rt.graph)$no
+                       )
+  bs3.df
+}
+
 tweetRetweetNodes <- function(rt.graph) {
-  retwitted <- degree(rt.graph, mode='out')
+  retwitted <- degree(rt.graph, mode='in')
   retwitted.df <- data.frame(Nodes=names(retwitted),
                              Nretwitted = retwitted,
                              orginalOrder = 1:length(retwitted),
                              stringsAsFactors=FALSE)
-  retweets <- degree(rt.graph, mode='in')
+  retweets <- degree(rt.graph, mode='out')
   retweets.df <- data.frame(Nodes=names(retweets),
                             Nretweets = retweets,
                             stringsAsFactors=FALSE)
   merged <- merge(retwitted.df, retweets.df)
+  prv <- page.rank(rt.graph)$vector
+  prv.df <- data.frame(Nodes=names(prv), PageRank=prv)
+  merged <- merge(merged, prv.df)
   # We should reurn it in the orginal order since it is needed for
   # ploting the graph of connections
   merged <- merged[order(merged$orginalOrder),-3]
@@ -27,13 +39,8 @@ tweetRetweetNodes <- function(rt.graph) {
 
 tweetRetweetNodesFull <- function(rt.graph) {
   nodes <- tweetRetweetNodes(rt.graph)
-  print("aaa")
-  print(dim(nodes))
   users <- getAllUsers()
   merged <- merge(nodes, users, all.x=TRUE, by.x="Nodes", by.y="screenName")
-  print("bbb")
-  print(dim(merged))
-  print("ccc")
   merged
 }
 

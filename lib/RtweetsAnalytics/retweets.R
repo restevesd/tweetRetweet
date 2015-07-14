@@ -22,7 +22,7 @@ retweetsEdgelist <- function(tweets.df) {
   retweets.ines <- retweetsMatches(tweets.df)
   who.retweets <- tweets.df[retweets.ines,]$screenName
   who.tweets <- extractPosters(tweets.df[retweets.ines,])
-  data.frame(Source=who.tweets, Target=who.retweets,
+  data.frame(Source=who.retweets, Target=who.tweets,
              stringsAsFactors=FALSE)
 }
 

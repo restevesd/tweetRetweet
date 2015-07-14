@@ -22,17 +22,16 @@ newLocations <- function(locations, db.path=DBPATH) {
 
 lookupAndAddCoordinates <- function(locations, db.path=DBPATH) {
   locations.new <- newLocations(locations, db.path=DBPATH)
-  print("aaaa")
-  print(locations.new)
-  print('bbb')
-  print(paste('Updating ', length(locations.new), " locations."))
-  coordinates <- geocode(locations.new)  # Use amazing API to guess
-  ## approximate lat/lon from textual location data.
-  ## with(locations, plot(lon, lat))
-  coordinates.df <- data.frame(location=locations.new, coordinates)
-  print(coordinates.df)
-  connection <- getConnection(db.path)
-  dbWriteTable(connection, "coordinates", coordinates.df, append=TRUE)
-  dbDisconnect(connection)
-  coordinates.df
+  n <- length(locations.new)
+  print(paste('Updating ', n, " locations."))
+  if (n != 0 ) {
+    coordinates <- geocode(locations.new)  # Use amazing API to guess
+    ## approximate lat/lon from textual location data.
+    ## with(locations, plot(lon, lat))
+    coordinates.df <- data.frame(location=locations.new, coordinates)
+    connection <- getConnection(db.path)
+    dbWriteTable(connection, "coordinates", coordinates.df, append=TRUE)
+    dbDisconnect(connection)
+  }
+  print('done')
 }

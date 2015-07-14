@@ -48,8 +48,10 @@ basicStat2Df <- function(tweets.df, users.df) {
   t.df <- tweets.df[c('screenName')]
   u.df <- users.df[c('screenName', 'followersCount')]
   merged <- merge(t.df, u.df, all.x=TRUE)
+  merged2 <- merge(unique(tweets.df[c('screenName')]), u.df, all.x=TRUE)
   reach <- sum(merged$followersCount, na.rm = TRUE)
-  bs2 <- data.frame(Reach=reach)
+  audience <- sum(merged2$followersCount, na.rm = TRUE)
+  bs2 <- data.frame(Reach=reach, Audience=audience)
   bs2
 }
 
@@ -62,21 +64,11 @@ freqPlotAll <- function(tweets.df) {
     theme_bw() + xlab('DateTime')  
 }
 
-tweetsHist <-  function(tweets.df, byHours=24) {
-  ggplot(data=tweets.df) +
-    geom_bar(aes(x=toDateTime(created), fill=as.factor(isRetweet)),
-             binwidth=byHours*3600) +
-    theme_bw() + xlab('DateTime')  +
-    labs(fill="Retwitted?") +
-    scale_fill_discrete(labels=c("No", "Yes"))
-}
-
-freqPlotByTRT <- function(tweets.df, init.date=NULL, end.date=NULL,
-                          byHours=2) {
+freqPlotByTRT <- function(tweets.df, init.date=NULL, end.date=NULL) {
   new.df <- limitByDate(tweets.df, init.date, end.date)
   ggplot(data=new.df) +
-    geom_freqpoly(aes(x=toDateTime(created), colour=as.factor(isRetweet)),
-                  binwidth=byHours*3600) +
+    geom_freqpoly(aes(toDateTime(created), colour=as.factor(isRetweet)),
+                  binwidth=10000) +
     theme_bw() + xlab('DateTime') +
         labs(colour="Retwitted?") +
     scale_colour_discrete(labels=c("No", "Yes"))

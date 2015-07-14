@@ -9,7 +9,10 @@ shinyUI(fluidPage(
       p("Analysis of Tweets with certain hash."),
       uiOutput('hashSelector'),
       dateRangeInput("dateRange", "Date Range",
-                     start = Sys.Date() - 31, end = Sys.Date())
+                     start = Sys.Date() - 31, end = Sys.Date()),
+      radioButtons('format', 'Document format', c('PDF', 'HTML', 'Word'),
+                   inline = TRUE),
+      downloadButton('downloadReport')
     ),
     mainPanel(
       tabsetPanel(
@@ -26,7 +29,7 @@ shinyUI(fluidPage(
                    sliderInput("histBinwidth",
                                "Binwidth of bars (in hours)",
                                1, 7*24, 3),
-                   plotOutput("tweetsHist"),
+                   ##plotOutput("tweetsHist"),
                    plotOutput("actionsHis"),
                    uiOutput('freqText'),
                    plotOutput("freqPlot")
@@ -39,8 +42,10 @@ shinyUI(fluidPage(
                      plotOutput('trtPlot'))),
         tabPanel("Statistics",
                  div(
+                   br(),
                    tableOutput('basicStat'),
-                   tableOutput('basicStat2')
+                   tableOutput('basicStat2'),
+                   tableOutput('basicStat3')
                    ## DT::dataTableOutput('basicStat')
                  )
                  ),
