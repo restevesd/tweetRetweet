@@ -224,19 +224,29 @@ shinyServer(function(input, output) {
     },
 
     content = function(file) {
-      src <- normalizePath('report.Rmd')
+      if (input$format=='PDF') {
+        filename = 'reportPDF.Rmd'
+      } else {
+        filename = 'report.Rmd'
+      }
+      src <- normalizePath(filename)
 
       # temporarily switch to the temp dir, in case you do not have write
       # permission to the current working directory
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
-      file.copy(src, 'report.Rmd')
-
-      library(rmarkdown)
-      out <- render('report.Rmd', switch(
-        input$format,
-        PDF = pdf_document(), HTML = html_document(), Word = word_document()
-      ))
+      file.copy(src, filename)
+      require(rmarkdown)
+      if (input$format=='PDF')
+      {
+        print("Preparing pdf...")
+        out <- render(filename, pdf_document())
+      } else {
+        out <- render(filename, switch(
+          input$format,
+          PDF = pdf_document(), HTML = html_document(), Word = word_document()
+          ))
+      }
       file.rename(out, file)
     }
   )

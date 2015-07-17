@@ -11,18 +11,3 @@
 ```{r freqPlot, echo=FALSE, message=FALSE, warning=FALSE}
     freqPlotByTRT(tweets.df())
 ```
-
-
-```{r}
-basicStatDf(tweets.df())
-```
-
-```{r}
-users.df <- nodes.df()[c('Nodes', 'followersCount')]
-colnames(users.df) <- c('screenName', 'followersCount')
-basicStat2Df(tweets.df(), users.df)
-```
-
-```{r}
-basicStat3Df(tweetRetweetGraph(tweets.df()))
-```
