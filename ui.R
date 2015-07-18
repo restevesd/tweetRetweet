@@ -1,4 +1,4 @@
-require('shiny')
+require('shinydashboard')
 
 shinyUI(fluidPage(
   br(),
