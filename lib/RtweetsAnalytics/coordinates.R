@@ -8,18 +8,21 @@ usersMapPlot <- function(coordinates.df, region=NULL) {
   }
   coordinates.plot <- ggplot() +
     geom_polygon( data=worldMap, aes(x=long, y=lat, group = group),
-                 colour="grey", fill="grey10", size=.1 ) +
+                 colour="grey", fill="white", size=.1 ) +
     theme_minimal() +
-    theme(plot.background= element_rect(fill = "gray10"),
+    theme(plot.background= element_rect(fill = "white"),
           panel.grid.major = element_line(colour="grey", size=0.1),
-          panel.grid.minor = element_line(colour="grey", linetype="dashed", size=0.1)
+          panel.grid.minor = element_line(
+            colour="grey",
+            linetype="dashed",
+            size=0.1)
           ) +
-##    xlab("") + ylab("") +
     coord_cartesian(xlim = c(min(worldMap$long), max(worldMap$long)),
                     ylim = c(min(worldMap$lat), max(worldMap$lat)))
-  coordinates.plot + geom_point(data = coordinates.df,  
-                                 aes(x = lon, y = lat),
-                                 colour = "yellow", alpha = .3, size = 1)
+  coordinates.plot + geom_point(
+                       data = coordinates.df,  
+                       aes(x = lon, y = lat),
+                       colour = "darkred", alpha = .3, size = 1)
 }
 
 

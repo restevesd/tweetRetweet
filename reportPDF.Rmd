@@ -1,9 +1,12 @@
+
 ## Report for Hash `r input$keyword`
+
+**Date range** : `r dateRange()[1]` - `r dateRange()[2]`
 
 ### Where tweets come form 
 
 ```{r usersMap, echo=FALSE, message=FALSE, warning=FALSE}
-  usersMapPlot(tweetsCoordinatesDisturbed.df(), region=input$region)
+  usersMapPlot(tweetsCoordinatesDisturbed.df(), region='Spain') 
 ```
 
 ### Basic statistics
