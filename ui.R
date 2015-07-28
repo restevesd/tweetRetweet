@@ -1,6 +1,8 @@
+
 require('leaflet')
 require('shinydashboard')
-library(RColorBrewer)
+require('RColorBrewer')
+require('rCharts')
 
 header <-
   dashboardHeader(
@@ -18,10 +20,6 @@ sidebar <-
       menuItem("Downloads", tabName = "downloads", icon = icon("download")),
       menuItem("Updates", tabName = "updates", icon = icon("refresh"))
     )
-    ## sidebarMenu(
-    ##   menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-    ##   menuItem("Widgets", tabName = "widgets", icon = icon("th"))
-    ## )
   )
 
 
@@ -63,17 +61,17 @@ statisticsTab <-
     fluidRow(
       box(
         title="Time evolution", status = "primary", solidHeader = TRUE,
-        plotOutput("freqPlot")
+        width = 8,
+        showOutput("myChart1", 'morris') 
       ),
+      ## box(
+      ##   title="Time evolution", status = "primary", solidHeader = TRUE,
+      ##   plotOutput("freqPlot")
+      ## ),
       box(
-        title="Histogram", status = "primary", solidHeader = TRUE,
+        title="Histogram", status = "primary", solidHeader = TRUE, width=4,
         tags$b("Number of users that made certian number of actions."),
         plotOutput("actionsHis")
-      )
-    ),
-    fluidRow(
-      box(
-        tableOutput('basicStat3')
       )
     )
   )
@@ -83,14 +81,27 @@ statisticsTab <-
 connectionsTab <- 
   tabItem(
     tabName = "connections",
-    plotOutput('trtPlot', height=600),
-    absolutePanel(
-      class = "controls",
-      top = 100, right = 50,
-      sliderInput(
-        "PercentageOfConnections",
-        "Percentage Of Connections To Plot",
-        0, 100, 30)
+    fluidRow(
+      infoBoxOutput("DiameterBox"),
+      infoBoxOutput("AveragePathLengthBox"),
+      infoBoxOutput("DensityBox"),
+      infoBoxOutput("ClustersBox"),
+      box(
+        sliderInput(
+          "PercentageOfConnections",
+          "Percentage Of Connections To Plot",
+          0, 100, 50)
+      )
+    ),
+    fluidRow(
+      box(
+        width=12,
+        plotOutput('trtPlot', height=600)
+        ## absolutePanel(
+        ##   class = "controls",
+        ##   top = 100, right = 50,
+        ## )
+      )
     )
   )
 

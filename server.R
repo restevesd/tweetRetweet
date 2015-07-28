@@ -1,6 +1,9 @@
 require('leaflet')
 require('shiny')
 require('shinydashboard')
+require('rCharts')
+require('data.table')
+require('reshape2')
 
 require('DT')
 
@@ -13,7 +16,32 @@ DELTA.SPAIN <- 0.02
 createTwitterModels() # follows schemas in config/db
 
 shinyServer(function(input, output) {
+  
+  output$myChart1 <- renderChart2({
+    dt1 <- tweets.dt()[,.(count=.N),
+                       by=.(date=format(toDateTime(created), "%Y-%m-%d"),
+                            isRetweet)]
+    dt2 <- dcast(dt1, date ~ isRetweet, fill=0)
+    colnames(dt2) <- c('date', 'Original', 'Retwitted')
+    m1 <- mPlot(x = "date", y = c('Original', 'Retwitted'),
+                type = "Line", data = dt2)
+    m1$set(pointSize = 2, lineWidth = 1)
+    return(m1)
+  })
 
+  output$myChart2 <- renderChart2({
+    dt1 <- tweets.dt()[,.(count=.N),
+                       by=.(date=format(toDateTime(created), "%Y-%m-%d"),
+                            isRetweet)]
+    dt2 <- dcast(dt1, date ~ isRetweet, fill=0)
+    colnames(dt2) <- c('date', 'Original', 'Retwitted')
+    m1 <- mPlot(x = "date", y = c('Original', 'Retwitted'),
+                type = "Line", data = dt2)
+    m1$set(pointSize = 2, lineWidth = 1)
+    return(m1)
+  })
+
+  
   output$messageMenu <- renderMenu({
     dropdownMenu(
       type = "messages",
@@ -35,9 +63,8 @@ shinyServer(function(input, output) {
       )
     )
   })
-  
-  ## ## Updating DB
 
+  ## ## Updating DB
   observeEvent(input$updateDb, {
     print('Connecting with Twitter and updating db...')
     twitterOAuth()
@@ -77,7 +104,9 @@ shinyServer(function(input, output) {
                 input$dateRange[1], input$dateRange[2]+1)
   })
 
-
+  tweets.dt <- reactive({
+    data.table(tweets.df())
+  })
   
   tweetsByScreenName.df <- reactive({
     tbs.df <- data.frame(table(by(tweets.df()$id, tweets.df()$screenName, length)))
@@ -178,11 +207,17 @@ shinyServer(function(input, output) {
     freqPlotByTRT(tweets.df())
   })
 
+  output$chart1 <- renderChart({
+    data(economics, package = "ggplot2")
+    econ <- transform(economics, date = as.character(date))
+    m1 <- mPlot(x = "date", y = c("psavert", "uempmed"), type = "Line", data = econ)
+    m1$set(pointSize = 0, lineWidth = 1)
+    m1
+  })
   ## ## TRT
   output$trtPlot <- renderPlot({
     rt.graph <- tweetRetweetGraph(tweets.df())
-    tweetRetweetPlot(rt.graph,
-                     PercentageOfConnections=input$PercentageOfConnections/100)
+    tweetRetweetPlot(rt.graph, PercentageOfConnections=input$PercentageOfConnections/100)
   })##,  height = "100%", width = "100%")
 
   
@@ -237,12 +272,42 @@ shinyServer(function(input, output) {
   })
 
   
-  
-  output$basicStat3 <- renderTable({
+  basicStat3 <- reactive({
     basicStat3Df(tweetRetweetGraph(tweets.df()))
   })
-
   
+  output$basicStat3 <- renderTable({
+    basicStat3()
+  })
+
+  output$DiameterBox <- renderInfoBox({
+    infoBox(
+      "Diameter of graph", basicStat3()[1,1], icon = icon("arrows-alt"),
+      color = "green"
+    )
+  })
+
+  output$AveragePathLengthBox <- renderInfoBox({
+    infoBox(
+      "Average Path Length", basicStat3()[1,2], icon = icon("arrows-h"),
+      color = "green"
+    )
+  })
+
+  output$DensityBox <- renderInfoBox({
+    infoBox(
+      "Density", basicStat3()[1,3], icon = icon("cubes"),
+      color = "green"
+    )
+  })
+
+  output$ClustersBox <- renderInfoBox({
+    infoBox(
+      "Number of Cluster", basicStat3()[1,4], icon = icon("ellipsis-h"),
+      color = "green"
+    )
+  })
+
   ## ## Tweets
   ## output$tweets <- renderDataTable({
   ##   tweets.df()
