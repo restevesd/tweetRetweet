@@ -17,6 +17,7 @@ sidebar <-
       menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
       menuItem("Statistics", tabName = "statistics", icon = icon("bar-chart")),
       menuItem("Connections", tabName = "connections", icon = icon("exchange")),
+      menuItem("Users", tabName = "users", icon = icon("users")),
       menuItem("Downloads", tabName = "downloads", icon = icon("download")),
       menuItem("Updates", tabName = "updates", icon = icon("refresh"))
     )
@@ -53,10 +54,6 @@ statisticsTab <-
       infoBoxOutput("nrOrginalTweetsBox"),
       infoBoxOutput("nrReweetsBox")
     ),
-    fluidRow(
-      infoBoxOutput("reachNr"),
-      infoBoxOutput("audienceNr")
-    ),
 
     fluidRow(
       box(
@@ -73,6 +70,15 @@ statisticsTab <-
         tags$b("Number of users that made certian number of actions."),
         plotOutput("actionsHis")
       )
+    ),
+
+    fluidRow(
+      box(
+        width=12,
+        DT::dataTableOutput('tweets'),
+        br(),
+        downloadLink('downloadTweets', 'Download CSV')
+      )
     )
   )
 
@@ -87,6 +93,7 @@ connectionsTab <-
       infoBoxOutput("DensityBox"),
       infoBoxOutput("ClustersBox"),
       box(
+        width=4,
         sliderInput(
           "PercentageOfConnections",
           "Percentage Of Connections To Plot",
@@ -95,6 +102,7 @@ connectionsTab <-
     ),
     fluidRow(
       box(
+        title="Tweet - Retweet connections", status = "primary", solidHeader = TRUE, 
         width=12,
         plotOutput('trtPlot', height=600)
         ## absolutePanel(
@@ -102,9 +110,54 @@ connectionsTab <-
         ##   top = 100, right = 50,
         ## )
       )
+    ),
+    fluidRow(
+      box(
+        title="Tweet - Retweet connections", status = "primary", solidHeader = TRUE, 
+        div(
+          br(),
+          DT::dataTableOutput('trtEdgelist'),
+          br(),
+          downloadLink('downloadTrtEdgelist', 'Download CSV')
+        )
+        
+      )
     )
   )
 
+usersTab <- 
+  tabItem(
+    tabName = "users",
+    fluidRow(
+      infoBoxOutput("reachNr"),
+      infoBoxOutput("audienceNr")
+    ),
+    fluidRow(
+      box(
+        title="Users", status = "primary", solidHeader = TRUE, 
+        width=12,
+        div(
+          br(),
+          DT::dataTableOutput('trtNodes'),
+          br(),
+          downloadLink('downloadUsers', 'Download CSV')
+        )        
+      )
+    ),
+    fluidRow(
+      box(
+        div(
+          title="Coordinates", status = "primary", solidHeader = TRUE, 
+          br(),
+          br(),
+          DT::dataTableOutput('coordinates'),
+          br(),
+          downloadLink('downloadCoordinates', 'Download CSV')
+        )
+
+      )
+    )
+  )
 
 downloadsTab <-
   tabItem(
@@ -146,6 +199,7 @@ body <-   dashboardBody(
   tabItems(
     dashboardTab,
     statisticsTab,
+    usersTab,
     connectionsTab,
     downloadsTab,
     updateTab
@@ -168,67 +222,9 @@ dashboardPage(
 ##     ),
 ##     mainPanel(
 ##       tabsetPanel(
-##         tabPanel("Map",
-##                  ),
-##         tabPanel("Histograms",
-##                  div(
-##                    br(),
-##                    sliderInput("histBinwidth",
-##                                "Binwidth of bars (in hours)",
-##                                1, 7*24, 3),
-##                    ##plotOutput("tweetsHist"),
-##                    plotOutput("actionsHis"),
-##                    uiOutput('freqText'),
-##                    plotOutput("freqPlot")
-##                  )
-##                  ),
-##         tabPanel("TRT Network",
-##                  div(sliderInput("PercentageOfConnections",
-##                                  "Percentage Of Connections To Plot",
-##                                  0, 100, 10),
-##                      plotOutput('trtPlot'))),
-##         tabPanel("Statistics",
-##                  div(
-##                    br(),
-##                    tableOutput('basicStat'),
-##                    tableOutput('basicStat2'),
-##                    tableOutput('basicStat3')
-##                    ## DT::dataTableOutput('basicStat')
-##                  )
-##                  ),
-##         tabPanel("Tweets",
-##                  div(
-##                    br(),
-##                    br(),
-##                    DT::dataTableOutput('tweets'),
-##                    br(),
-##                    downloadLink('downloadTweets', 'Download CSV')
-##                  )
-##                  ),
-##         tabPanel("Users",
-##                  div(
-##                    br(),
-##                    DT::dataTableOutput('trtNodes'),
-##                    br(),
-##                    downloadLink('downloadUsers', 'Download CSV')
-##                  )
-##                  ),
 ##         tabPanel("TRTEdgelist",
-##                  div(
-##                    br(),
-##                    DT::dataTableOutput('trtEdgelist'),
-##                    br(),
-##                    downloadLink('downloadTrtEdgelist', 'Download CSV')
-##                  )
 ##                  ),
 ##         tabPanel("Coordinates",
-##                  div(
-##                    br(),
-##                    br(),
-##                    DT::dataTableOutput('coordinates'),
-##                    br(),
-##                    downloadLink('downloadCoordinates', 'Download CSV')
-##                  )
 ##                  )
 ##       )
 ##     )

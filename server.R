@@ -129,10 +129,10 @@ shinyServer(function(input, output) {
   })
 
  
-  ## coordinates.df <- reactive({
-  ##   input$updateDb
-  ##   subset(allLocations.df(), location %in% nodes.df()$location)
-  ## })
+  coordinates.df <- reactive({
+    input$updateDb
+    subset(allLocations.df(), location %in% nodes.df()$location)
+  })
   
   usersCoordinates.df <- reactive({
     usersLoc <- nodes.df()[c("Nodes", "location")]
@@ -308,68 +308,68 @@ shinyServer(function(input, output) {
     )
   })
 
-  ## ## Tweets
-  ## output$tweets <- renderDataTable({
-  ##   tweets.df()
-  ## })
+  ## Tweets
+  output$tweets <- renderDataTable({
+    tweets.df()
+  })
 
-  ## output$downloadTweets <- downloadHandler(
-  ##   filename = function() {
-  ##      paste('tweets-', Sys.Date(), '.csv', sep='')
-  ##   },
-  ##   content = function(file) {
-  ##     write.csv(tweets.df(), file)
-  ##   }
-  ## )
+  output$downloadTweets <- downloadHandler(
+    filename = function() {
+       paste('tweets-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(tweets.df(), file)
+    }
+  )
 
   ## ## Users
   
-  ## output$trtNodes <- DT::renderDataTable({
-  ##   ns.df <- nodes.df()
-  ##   DT::datatable(ns.df[order(-ns.df$Nretwitted),],
-  ##                 options = list(lengthChange = FALSE))
-  ## })
+  output$trtNodes <- DT::renderDataTable({
+    ns.df <- nodes.df()
+    DT::datatable(ns.df[order(-ns.df$Nretwitted),],
+                  options = list(lengthChange = FALSE))
+  })
 
-  ## output$downloadUsers <- downloadHandler(
-  ##   filename = function() {
-  ##      paste('users-', Sys.Date(), '.csv', sep='')
-  ##   },
-  ##   content = function(file) {
-  ##     write.csv(nodes.df(), file)
-  ##   }
-  ## )
+  output$downloadUsers <- downloadHandler(
+    filename = function() {
+       paste('users-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(nodes.df(), file)
+    }
+  )
 
   ## ## TRT Eage list
 
-  ## output$trtEdgelist <- DT::renderDataTable({
-  ##   DT::datatable(trtEdgelist.df())
-  ## })
+  output$trtEdgelist <- DT::renderDataTable({
+    DT::datatable(trtEdgelist.df())
+  })
 
-  ## output$downloadTrtEdgelist <- downloadHandler(
-  ##   filename = function() {
-  ##      paste('trtEdgelist-', Sys.Date(), '.csv', sep='')
-  ##   },
-  ##   content = function(file) {
-  ##     write.csv(trtEdgelist.df(), file)
-  ##   }
-  ## )
+  output$downloadTrtEdgelist <- downloadHandler(
+    filename = function() {
+       paste('trtEdgelist-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(trtEdgelist.df(), file)
+    }
+  )
 
   
   ## ## Coordinates
   
-  ## output$coordinates <- renderDataTable({
-  ##   ## tweetsCoordinatesDisturbed.df()
-  ##   coordinates.df()
-  ## })
+  output$coordinates <- renderDataTable({
+    ## tweetsCoordinatesDisturbed.df()
+    coordinates.df()
+  })
   
-  ## output$downloadCoordinates <- downloadHandler(
-  ##   filename = function() {
-  ##      paste('coordinates-', Sys.Date(), '.csv', sep='')
-  ##   },
-  ##   content = function(file) {
-  ##     write.csv(coordinates.df(), file)
-  ##   }
-  ## )
+  output$downloadCoordinates <- downloadHandler(
+    filename = function() {
+       paste('coordinates-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(file) {
+      write.csv(coordinates.df(), file)
+    }
+  )
 
   output$downloadReport <- downloadHandler(
     filename = function() {
