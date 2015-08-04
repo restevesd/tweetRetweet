@@ -1,4 +1,3 @@
-
 require('leaflet')
 require('shinydashboard')
 require('RColorBrewer')
@@ -61,10 +60,6 @@ statisticsTab <-
         width = 8,
         showOutput("myChart1", 'morris') 
       ),
-      ## box(
-      ##   title="Time evolution", status = "primary", solidHeader = TRUE,
-      ##   plotOutput("freqPlot")
-      ## ),
       box(
         title="Histogram", status = "primary", solidHeader = TRUE, width=4,
         tags$b("Number of users that made certian number of actions."),
@@ -91,7 +86,18 @@ connectionsTab <-
       infoBoxOutput("DiameterBox"),
       infoBoxOutput("AveragePathLengthBox"),
       infoBoxOutput("DensityBox"),
-      infoBoxOutput("ClustersBox"),
+      infoBoxOutput("ClustersBox")
+    ),
+    fluidRow(
+      box(
+        title="Tweet - Retweet connections", status = "primary", solidHeader = TRUE, 
+        width=8,
+        plotOutput('trtPlot', height=600)
+        ## absolutePanel(
+        ##   class = "controls",
+        ##   top = 100, right = 50,
+        ## )
+      ),
       box(
         width=4,
         sliderInput(
@@ -99,17 +105,7 @@ connectionsTab <-
           "Percentage Of Connections To Plot",
           0, 100, 50)
       )
-    ),
-    fluidRow(
-      box(
-        title="Tweet - Retweet connections", status = "primary", solidHeader = TRUE, 
-        width=12,
-        plotOutput('trtPlot', height=600)
-        ## absolutePanel(
-        ##   class = "controls",
-        ##   top = 100, right = 50,
-        ## )
-      )
+
     ),
     fluidRow(
       box(
@@ -134,7 +130,7 @@ usersTab <-
     ),
     fluidRow(
       box(
-        title="Users", status = "primary", solidHeader = TRUE, 
+        title="Users - Infuence", status = "primary", solidHeader = TRUE, 
         width=12,
         div(
           br(),
@@ -146,9 +142,15 @@ usersTab <-
     ),
     fluidRow(
       box(
+        title="Users - Actions", status = "primary", solidHeader = TRUE, 
         div(
-          title="Coordinates", status = "primary", solidHeader = TRUE, 
           br(),
+          DT::dataTableOutput('usersNrAcctions')
+        )
+      ),
+      box(
+        title="Coordinates", status = "primary", solidHeader = TRUE, 
+        div(
           br(),
           DT::dataTableOutput('coordinates'),
           br(),

@@ -1,16 +1,37 @@
+---
+title: "Twitter Tailored Tools:Report"
+output: rmarkdown::tufte_handout
+tables: true
+---
 
-## Report for Hash `r input$keyword`
+## Tweets with hash `r input$keyword` from `r dateRange()[1]` through `rdateRange()[2]`.
 
-**Date range** : `r dateRange()[1]` - `r dateRange()[2]`
+```{r basicStat, results='asis', echo=FALSE, message=FALSE, warning=FALSE}
+## Action by user ???
+library(xtable)
+options(xtable.comment = FALSE)
+options(xtable.booktabs = TRUE)
+xtable(basicStatDf(tweets.df()))
+```
+
+```{r timeEvoltion, echo=FALSE, message=FALSE, warning=FALSE}
+freqPlotByTRT(tweets.df())
+```
+
+```{r actionsHistogram, echo=FALSE, message=FALSE, warning=FALSE}
+actionsHisPlot()
+```
+
 
 ### Where tweets come form 
 
-```{r usersMap, echo=FALSE, message=FALSE, warning=FALSE}
+```{r usersMap, echo=FALSE, message=FALSE, warning=FALSE, fig.margin = TRUE}
   usersMapPlot(tweetsCoordinatesDisturbed.df(), region='Spain') 
 ```
 
-### Basic statistics
+### Connections
 
-```{r freqPlot, echo=FALSE, message=FALSE, warning=FALSE}
-    freqPlotByTRT(tweets.df())
+```{r conn, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+xtable(basicStat2())
 ```
+

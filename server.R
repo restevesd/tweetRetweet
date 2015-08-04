@@ -82,7 +82,7 @@ shinyServer(function(input, output) {
   output$hashSelector <- renderUI({
     selectInput("keyword", "Select hash",
                 choices =  getAllHashes()$hash, 
-                selected = "#STOPDesigualdad")
+                selected = getAllHashes()$hash[1])
   })
 
   ## output$oxfamImage <- renderImage({
@@ -100,8 +100,14 @@ shinyServer(function(input, output) {
   
   tweets.df <- reactive({
     input$updateDb
-    limitByDate(getTweetsFromDB(input$keyword, n.tweets=10000),
-                input$dateRange[1], input$dateRange[2]+1)
+    df <- data.frame()
+    keyword <- input$keyword
+    if (is.null(keyword)) {
+      keyword <- getAllHashes()$hash[1]
+    }
+    df <- limitByDate(getTweetsFromDB(keyword, n.tweets=10000),
+                        input$dateRange[1], input$dateRange[2]+1)
+    df
   })
 
   tweets.dt <- reactive({
@@ -153,8 +159,8 @@ shinyServer(function(input, output) {
 
   tweetsCoordinatesSP.df <- reactive({
     coords <- tweetsCoordinates.df()
-    lonLat <- coords[,c("lon", "lat")]
-    sp::SpatialPointsDataFrame(lonLat, coords[,c("Nodes", "location")])
+    lonLat <- coords[c("lon", "lat")]
+    sp::SpatialPointsDataFrame(lonLat, coords[c("Nodes")])
   })
 
   
@@ -169,10 +175,19 @@ shinyServer(function(input, output) {
 
   output$usersMapPlot <- renderLeaflet({
     ## usersMapPlot(tweetsCoordinatesDisturbed.df(), region=input$region)
-    leaflet(tweetsCoordinatesSP.df()) %>%
+    ## leaflet(tweetsCoordinatesSP.df()) %>%
+    ##   addTiles() %>%  # Add default OpenStreetMap map tiles
+    ##   setView(lng = 0, lat = 40, zoom = 5) %>%
+    ##   addCircleMarkers(
+    ##     radius = 6,
+    ##     color = "darkred",
+    ##     stroke = FALSE, fillOpacity = 0.3
+    ##   )
+    leaflet() %>%
       addTiles() %>%  # Add default OpenStreetMap map tiles
       setView(lng = 0, lat = 40, zoom = 5) %>%
       addCircleMarkers(
+        data=tweetsCoordinates.df()[c("lon", "lat")],
         radius = 6,
         color = "darkred",
         stroke = FALSE, fillOpacity = 0.3
@@ -190,7 +205,7 @@ shinyServer(function(input, output) {
   ##   tweetsHist(tweets.df(), byHours=input$histBinwidth)
   ## })
 
-  output$actionsHis <- renderPlot({
+  actionsHisPlot <- reactive({
     tbs.df <- tweetsByScreenName.df()
     tbs1.freq <- sum(tbs.df[tbs.df$actionsNumber==1,2])
     tbs2.freq <- sum(tbs.df[tbs.df$actionsNumber %in% 2:4,2])
@@ -201,6 +216,10 @@ shinyServer(function(input, output) {
                           Freq=c(tbs1.freq, tbs2.freq, tbs3.freq, tbs4.freq))
     ggplot(tbs2.df, aes(actionsNumber, Freq)) + geom_bar(stat="identity") +
       theme_bw()
+  })
+  
+  output$actionsHis <- renderPlot({
+    actionsHisPlot()
   })
   
   output$freqPlot <- renderPlot({
@@ -310,7 +329,7 @@ shinyServer(function(input, output) {
 
   ## Tweets
   output$tweets <- renderDataTable({
-    tweets.df()
+    tweets.df()[c("text", "screenName")]
   })
 
   output$downloadTweets <- downloadHandler(
@@ -325,11 +344,17 @@ shinyServer(function(input, output) {
   ## ## Users
   
   output$trtNodes <- DT::renderDataTable({
-    ns.df <- nodes.df()
+    ns.df <- nodes.df()[c("Nodes", "Nretwitted","Nretweets", "PageRank","location")]
     DT::datatable(ns.df[order(-ns.df$Nretwitted),],
                   options = list(lengthChange = FALSE))
   })
 
+  output$usersNrAcctions <- DT::renderDataTable({
+    DT::datatable(tweets.dt()[,.(Number_of_actions=.N), by=screenName][order(-Number_of_actions)],
+                  options = list(lengthChange = FALSE))
+  })
+
+  
   output$downloadUsers <- downloadHandler(
     filename = function() {
        paste('users-', Sys.Date(), '.csv', sep='')

@@ -2,6 +2,7 @@
 ##
 
 require('rgexf')
+require('igraph')
 
 tweetRetweetGraph <- function(tweets.df) {
   graph.edgelist(retweetsEdgelist.matrix(tweets.df))
@@ -18,6 +19,7 @@ basicStat3Df <- function(rt.graph) {
 
 tweetRetweetNodes <- function(rt.graph) {
   retwitted <- degree(rt.graph, mode='in')
+  if (length(V(rt.graph))==0) return(data.frame())
   retwitted.df <- data.frame(Nodes=names(retwitted),
                              Nretwitted = retwitted,
                              orginalOrder = 1:length(retwitted),
