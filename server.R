@@ -16,6 +16,9 @@ DELTA.SPAIN <- 0.02
 createTwitterModels() # follows schemas in config/db
 
 shinyServer(function(input, output) {
+
+  rValues <- reactiveValues()
+  rValues$addHashMessage <- ""
   
   output$myChart1 <- renderChart2({
     dt1 <- tweets.dt()[,.(count=.N),
@@ -432,4 +435,35 @@ shinyServer(function(input, output) {
   )
 
   
+  
+  observeEvent(input$addHash, {
+    input$newHash
+    nh <- input$newHash
+    if (length(grep('^#[^[:blank:]]+$', nh))>0) {
+      if (nh %in% getAllHashes()$hash) {
+        rValues$addHashMessage <- paste0("Hash ",nh, " already exists!")
+      } else {
+        addHash(nh)
+        rValues$addHashMessage <-"New hash added!"
+      } 
+    } else {
+      rValues$addHashMessage <- paste0(nh, " is not a proper Hash!")
+    }
+  })
+  
+  output$allHashes <- renderDataTable({
+    rValues$addHashMessage
+    getAllHashes()
+  })
+
+  output$addHashMessage <- renderText({
+    rValues$addHashMessage
+  })
+  
+  output$newHash <- renderText({
+    input$newHash
+  })
+
+
+
 })

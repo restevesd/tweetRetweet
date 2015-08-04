@@ -179,14 +179,19 @@ updateTab <-
     tabName = "updates",
     fluidRow(
       box(
-        width=6,
-        p('Connect with Twitter and update database.'),
-        actionButton("updateDb", "Update DataBase")
+        width=4,
+        DT::dataTableOutput('allHashes'),
+        h3(textOutput("addHashMessage")),
+        br(),
+        textInput("newHash", "New Hash", value = ""),
+        actionButton("addHash", "Add")
       ),
       box(
-        width=6,
+        width=4,
+        p('Connect with Twitter and update database.'),
+        actionButton("updateDb", "Update Tweets in DataBase"),
         p('Connect with Google and update database of coordinates.'),
-        actionButton("updateCoordinates", "Update DataBase")
+        actionButton("updateCoordinates", "Update Locations in DataBase")
       )
     )
   )
