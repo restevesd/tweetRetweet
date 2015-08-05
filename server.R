@@ -4,6 +4,7 @@ require('shinydashboard')
 require('rCharts')
 require('data.table')
 require('reshape2')
+require('networkD3')
 
 require('DT')
 
@@ -237,6 +238,19 @@ shinyServer(function(input, output) {
     m1
   })
   ## ## TRT
+  output$trtSimplePlot <- renderSimpleNetwork({
+    networkData <- trtEdgelist.df()
+    setnames(networkData, c("src", "target"))
+    simpleNetwork(networkData, opacity = 0.5)
+  })
+  
+  output$trtForcePlot <- renderForceNetwork({
+    forceNetwork(Links = MisLinks, Nodes = MisNodes, Source = "source",
+                 Target = "target", Value = "value", NodeID = "name",
+                 Group = "group", opacity = input$opacity)
+  })
+
+  
   output$trtPlot <- renderPlot({
     rt.graph <- tweetRetweetGraph(tweets.df())
     tweetRetweetPlot(rt.graph, PercentageOfConnections=input$PercentageOfConnections/100)

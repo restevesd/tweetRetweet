@@ -2,6 +2,7 @@ require('leaflet')
 require('shinydashboard')
 require('RColorBrewer')
 require('rCharts')
+require('networkD3')
 
 header <-
   dashboardHeader(
@@ -53,7 +54,6 @@ statisticsTab <-
       infoBoxOutput("nrOrginalTweetsBox"),
       infoBoxOutput("nrReweetsBox")
     ),
-
     fluidRow(
       box(
         title="Time evolution", status = "primary", solidHeader = TRUE,
@@ -77,11 +77,21 @@ statisticsTab <-
     )
   )
 
-
-
 connectionsTab <- 
   tabItem(
     tabName = "connections",
+    box(
+      width = 12, 
+      simpleNetworkOutput("trtSimplePlot", height=900)
+      ##,
+      ## box(
+      ##   width=4,
+      ##   sliderInput(
+      ##     "PercentageOfConnections",
+      ##     "Percentage Of Connections To Plot",
+      ##     0, 100, 50)
+      ## )
+    ),
     fluidRow(
       infoBoxOutput("DiameterBox"),
       infoBoxOutput("AveragePathLengthBox"),
@@ -91,32 +101,12 @@ connectionsTab <-
     fluidRow(
       box(
         title="Tweet - Retweet connections", status = "primary", solidHeader = TRUE, 
-        width=8,
-        plotOutput('trtPlot', height=600)
-        ## absolutePanel(
-        ##   class = "controls",
-        ##   top = 100, right = 50,
-        ## )
-      ),
-      box(
-        width=4,
-        sliderInput(
-          "PercentageOfConnections",
-          "Percentage Of Connections To Plot",
-          0, 100, 50)
-      )
-
-    ),
-    fluidRow(
-      box(
-        title="Tweet - Retweet connections", status = "primary", solidHeader = TRUE, 
         div(
           br(),
           DT::dataTableOutput('trtEdgelist'),
           br(),
           downloadLink('downloadTrtEdgelist', 'Download CSV')
-        )
-        
+        )  
       )
     )
   )
