@@ -219,6 +219,7 @@ shinyServer(function(input, output) {
     tbs2.df <- data.frame(actionsNumber=aN,
                           Freq=c(tbs1.freq, tbs2.freq, tbs3.freq, tbs4.freq))
     ggplot(tbs2.df, aes(actionsNumber, Freq)) + geom_bar(stat="identity") +
+      geom_text(aes(label=Freq), vjust=-0.2) +
       theme_bw()
   })
   
@@ -239,9 +240,31 @@ shinyServer(function(input, output) {
   })
   ## ## TRT
   output$trtSimplePlot <- renderSimpleNetwork({
+    ## trtLinks.dt <- data.table(trtEdgelist.df())
+    ## setnames(trtLinks.dt, c("source", "target"))
+    ## trtLinks.dt[, value:=.N, by=c("source", "target")]
+
+    ## treba zamienic na numery !!!
+    
+    ## trtNodes.dt <- data.table(name=nodes.df()$Nodes, size=nodes.df()$PageRank, group=1)
+    
+    ## print(head(trtLinks.dt))
+    ## print(head(trtNodes.dt))
+
+    ## forceNetwork(Links = trtLinks.dt, Nodes = trtNodes.dt, Source = "source",
+    ##              Target = "target", Value = "value", NodeID = "name",
+    ##              Group = "group", opacity = 0.4, zoom = TRUE)
+
+    ## forceNetwork(Links = data.frame(trtLinks.dt), Nodes = data.frame(trtNodes.dt),
+    ##              Source = "source",
+    ##              Target = "target", Value = "value", NodeID = "name",
+    ##              Nodesize = "size",
+    ##              radiusCalculation = "Math.sqrt(d.nodesize)+6",
+    ##              Group = "group", opacity = 0.4, zoom = TRUE)
+
     networkData <- trtEdgelist.df()
     setnames(networkData, c("src", "target"))
-    simpleNetwork(networkData, opacity = 0.5)
+    simpleNetwork(networkData, opacity = 0.5, zoom = TRUE)
   })
   
   output$trtForcePlot <- renderForceNetwork({

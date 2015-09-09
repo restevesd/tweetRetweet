@@ -82,7 +82,7 @@ connectionsTab <-
     tabName = "connections",
     box(
       width = 12, 
-      simpleNetworkOutput("trtSimplePlot", height=900)
+      simpleNetworkOutput("trtSimplePlot", width = "100%", height="700px")
       ##,
       ## box(
       ##   width=4,
