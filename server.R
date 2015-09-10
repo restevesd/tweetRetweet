@@ -84,9 +84,11 @@ shinyServer(function(input, output) {
 
   ## Side Panel outputs  
   output$hashSelector <- renderUI({
+    hashes <- getAllHashes()
+    n <- length(hashes$hash)
     selectInput("keyword", "Select hash",
-                choices =  getAllHashes()$hash, 
-                selected = getAllHashes()$hash[1])
+                choices =  hashes$hash, 
+                selected = hashes$hash[n])
   })
 
   ## output$oxfamImage <- renderImage({
